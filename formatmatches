@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+echo -e "Film\tMatch\tThread" |
+	cat - matches |
+	sed 's \([^\t]*\)\t\(http.*\)\t\(http.*\)$ <a\ href="\2">\1</a>\t<a\ href="\3">\3</a> ' |
+	sed '1 {s ^ <table><thead><tr><th> ; s \t </th><th> g; s $ </th></tr></thead> }' |
+	sed '1 ! {s ^ <tr><td> ; s \t </td><td> g; s $ </td></tr> }' |
+	sed '$ s $ </tbody></table> '

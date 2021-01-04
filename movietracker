@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+# TODO:
+# Redirect errors to logfile
+# Check what happens when no file `lastchecked` is there
+# Shellcheck
+# Add cronjob example
+# Add license
+
+set -euo pipefail     # strict mode
+IFS=$'\n\t'
+cd "$(dirname "$0")"  # execute in script directory
+
+source config
+for var in watchlist user_agent; do
+	if [ -z "${!var:-}" ]; then
+		echo "Error: config variable \$$var is not defined" >> /dev/stderr
+		exit 2
+	fi
+done
+
+log () {
+	echo "[$(date)] $*" >> "${logfile:-/dev/stderr}"
+}
+
+main () {
+	fetch_url="https://api.reddit.com/r/fullmoviesonyoutube/new?before=$(< lastchecked)"
+	log "Request $fetch_url"
+	curl -H "User-Agent: $user_agent" "$fetch_url" > newposts
+	
+	log "Parse results"
+	true > matches  # empty matchlist
+	cat newposts |
+		jq -rc '.data.children[].data | "\(.title)\t\(.url)\thttps://reddit.com\(.permalink)"' |
+		while read -r title url thread; do
+			cat "$watchlist" | while read -r film; do
+				if grep -iwq "$film" <<< "$title"; then
+					log "Match: '$film' -> '$title'"
+					echo -e "$film\t$title\t$url\t$thread" >> matches
+				fi
+			done
+		done
+	
+	if [ -s matches ]; then
+		./formatmatches > matches.html
+		if [ ! -z "${onmatch:-}" ]; then
+			eval "$onmatch"
+		else
+			echo -e "Film\tTitle match\tLink\tThread" |
+				cat - matches |
+				cut -f 1-3 |
+				column -ts $'\t'
+		fi
+	else
+		log "No matches."
+		eval "${onnomatch:-true}"
+	fi
+	
+	jq -r '.data.children[0].data.name' newposts > lastchecked
+	log "ID of last checked post: $(< lastchecked)"
+	log "Script finished successfully."
+}
+
+cleanup () {
+	log "Script encountered an error."
+	eval "${onerror:-exit 1}"
+}
+
+trap cleanup ERR
+(main)

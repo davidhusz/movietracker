@@ -1,0 +1,5 @@
+# This is the config file. Here you can specify how movietracker should behave.
+# For more information, consult the README. The file will be sourced as is, so
+# make sure it's a valid bash script. Comments will be ignored.
+user_agent=
+watchlist=watchlist.example

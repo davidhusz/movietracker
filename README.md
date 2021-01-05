@@ -16,8 +16,9 @@ rules, see [here](https://github.com/reddit-archive/reddit/wiki/API#rules)
 (the rules about authentication however do not apply as `movietracker`
 does not need a reddit account).
 
-The `logfile` argument defines where debug information should be written to
-(can also be `/dev/null`). The default is `/dev/stderr`.
+The `logfile` argument defines the file that debug information and errors
+should be written to (can also be a pseudofile like `/dev/null`). The default
+is `log`.
 
 Lastly, you can specify what `movietracker` should do in case it finds matches,
 does not find matches, or encounters an error. Each of these arguments should
@@ -39,5 +40,6 @@ You could, for example, send yourself an email with the results:
 `onnomatch` defines what to do in case no matches are found. By default,
 nothing is done.
 
-`onerror` defines what to do when the program encounters an error. By default,
-it will exit with status code 1.
+`onerror` defines what to do when the program encounters an error. The error
+message is written to the logfile and also made available in a file called
+`error`. By default, the program will exit with status code 1.

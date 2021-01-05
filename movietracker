@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # TODO:
-# Redirect errors to logfile
 # Shellcheck
 # Add cronjob example
 # Add license
@@ -19,7 +18,7 @@ for var in watchlist user_agent; do
 done
 
 log () {
-	echo "[$(date)] $*" >> "${logfile:-/dev/stderr}"
+	echo "[$(date)] $*" >> "${logfile:-log}"
 }
 
 main () {
@@ -66,9 +65,12 @@ main () {
 }
 
 cleanup () {
-	log "Script encountered an error."
+	log "Script encountered an error and exited with exit code $?." \
+		"$(sed 's/^/\t/' error)"  # display indented error message
+	rm error
 	eval "${onerror:-exit 1}"
 }
 
 trap cleanup ERR
-(main)
+(main) 2> error
+rm error

@@ -56,7 +56,10 @@ main () {
 		eval "${onnomatch:-true}"
 	fi
 	
-	jq -r '.data.children[0].data.name' newposts > lastchecked
+	lastchecked=$(jq -r '.data.children[0].data.name' newposts)
+	if [ "$lastchecked" != "null" ]; then
+		echo "$lastchecked" > lastchecked
+	fi
 	log "ID of last checked post: $(< lastchecked)"
 	log "Script finished successfully."
 }

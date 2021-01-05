@@ -26,7 +26,7 @@ log () {
 main () {
 	fetch_url="https://api.reddit.com/r/fullmoviesonyoutube/new?before=$(< lastchecked)"
 	log "Request $fetch_url"
-	curl -H "User-Agent: $user_agent" "$fetch_url" > newposts
+	curl -fsSL -H "User-Agent: $user_agent" "$fetch_url" > newposts
 	
 	log "Parse results"
 	true > matches  # empty matchlist

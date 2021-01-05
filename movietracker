@@ -2,7 +2,6 @@
 
 # TODO:
 # Redirect errors to logfile
-# Check what happens when no file `lastchecked` is there
 # Shellcheck
 # Add cronjob example
 # Add license
@@ -24,7 +23,8 @@ log () {
 }
 
 main () {
-	fetch_url="https://api.reddit.com/r/fullmoviesonyoutube/new?before=$(< lastchecked)"
+	fetch_url="https://api.reddit.com/r/fullmoviesonyoutube/new"
+	test -f lastchecked && fetch_url="${fetch_url}?before=$(< lastchecked)"
 	log "Request $fetch_url"
 	curl -fsSL -H "User-Agent: $user_agent" "$fetch_url" > newposts
 	

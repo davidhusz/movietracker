@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 
 # TODO:
-# Shellcheck
+# Use agrep instead of grep
+# Extract only the movie title from reddit post title
+# Search files concurrently
+# For README:
+# Add example output
 # Add cronjob example
+# Document exit codes
+# List dependencies
 # Add license
 
 set -euo pipefail     # strict mode
@@ -28,7 +34,7 @@ main () {
 	curl -fsSL -H "User-Agent: $user_agent" "$fetch_url" > newposts
 	
 	log "Parse results"
-	true > matches  # empty matchlist
+	true > matches  # empty the previous matchlist
 	cat newposts |
 		jq -rc '.data.children[].data | "\(.title)\t\(.url)\thttps://reddit.com\(.permalink)"' |
 		while read -r title url thread; do
@@ -72,5 +78,6 @@ cleanup () {
 }
 
 trap cleanup ERR
+# Subshell is required for errexit to work properly inside the main function
 (main) 2> error
 rm error

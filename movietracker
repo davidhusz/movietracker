@@ -53,6 +53,7 @@ main () {
 		fi
 	else
 		log "No matches."
+		rm matches
 		eval "${onnomatch:-true}"
 	fi
 	

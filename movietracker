@@ -2,7 +2,6 @@
 
 # TODO:
 # Use agrep instead of grep
-# Extract only the movie title from reddit post title
 # Search files concurrently
 # For README:
 # Add example output
@@ -39,6 +38,8 @@ main () {
 		jq -rc '.data.children[].data |
 			"\(.title)\t\(.url)\thttps://reddit.com\(.permalink)"' |
 			while read -r title url thread; do
+				# regex capturing groups: title, year, resolution
+				title=$(sed -E 's/^(.*) (\(.+\)) (\[.+\])/\1/' <<< "$title")
 				cat "$watchlist" | while read -r film; do
 					if grep -iwq "$film" <<< "$title"; then
 						log "Match: '$film' -> '$title'"

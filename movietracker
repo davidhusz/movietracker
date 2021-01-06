@@ -36,15 +36,16 @@ main () {
 	log "Parse results"
 	true > matches  # empty the previous matchlist
 	cat newposts |
-		jq -rc '.data.children[].data | "\(.title)\t\(.url)\thttps://reddit.com\(.permalink)"' |
-		while read -r title url thread; do
-			cat "$watchlist" | while read -r film; do
-				if grep -iwq "$film" <<< "$title"; then
-					log "Match: '$film' -> '$title'"
-					echo -e "$film\t$title\t$url\t$thread" >> matches
-				fi
+		jq -rc '.data.children[].data |
+			"\(.title)\t\(.url)\thttps://reddit.com\(.permalink)"' |
+			while read -r title url thread; do
+				cat "$watchlist" | while read -r film; do
+					if grep -iwq "$film" <<< "$title"; then
+						log "Match: '$film' -> '$title'"
+						echo -e "$film\t$title\t$url\t$thread" >> matches
+					fi
+				done
 			done
-		done
 	
 	if [ -s matches ]; then
 		if [ ! -z "${onmatch:-}" ]; then

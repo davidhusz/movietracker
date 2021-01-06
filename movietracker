@@ -47,14 +47,10 @@ main () {
 		done
 	
 	if [ -s matches ]; then
-		./formatmatches > matches.html
 		if [ ! -z "${onmatch:-}" ]; then
 			eval "$onmatch"
 		else
-			echo -e "Film\tTitle match\tLink\tThread" |
-				cat - matches |
-				cut -f 1-3 |
-				column -ts $'\t'
+			./formatmatches pretty
 		fi
 	else
 		log "No matches."

@@ -1,8 +1,28 @@
 #!/usr/bin/env bash
 
-echo -e "Film\tMatch\tThread" |
-	cat - matches |
-	sed 's \([^\t]*\)\t\(http.*\)\t\(http.*\)$ <a\ href="\2">\1</a>\t<a\ href="\3">\3</a> ' |
-	sed '1 {s ^ <table><thead><tr><th> ; s \t </th><th> g; s $ </th></tr></thead> }' |
-	sed '1 ! {s ^ <tr><td> ; s \t </td><td> g; s $ </td></tr> }' |
-	sed '$ s $ </tbody></table> '
+set -euo pipefail
+
+if [ -z "${1:-}" ]; then
+	echo "Error: no format specified"
+	exit 1
+fi
+
+case "$1" in
+	pretty)
+		echo -e "Film\tTitle match\tLink\tThread" |
+			cat - matches |
+			cut -f 1-3 |
+			column -ts $'\t'
+		;;
+	html)
+		echo -e "Film\tMatch\tThread" |
+			cat - matches |
+			sed 's \([^\t]*\)\t\(http.*\)\t\(http.*\)$ <a\ href="\2">\1</a>\t<a\ href="\3">\3</a> ' |
+			sed '1 {s ^ <table><thead><tr><th> ; s \t </th><th> g; s $ </th></tr></thead> }' |
+			sed '1 ! {s ^ <tr><td> ; s \t </td><td> g; s $ </td></tr> }' |
+			sed '$ s $ </tbody></table> '
+		;;
+	*)
+		echo "Error: unsupported format '$1'"
+		exit 1
+esac

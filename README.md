@@ -25,17 +25,20 @@ does not find matches, or encounters an error. Each of these arguments should
 be a valid bash command because it will be `eval`ed by the program.
 
 `onmatch` defines how to treat matches. The results are made available as
-tab-separated values in a file called `matches` (columns: movie title, title
-of reddit post, YouTube URL, reddit URL). A version of this as an HTML table
-is available as `matches.html`. By default, a pretty-printed version of the
-data will be written to stdout.
+tab-separated values in a file called `matches` (columns: movie title, title of
+reddit post, YouTube URL, reddit URL). You can also use the script
+`formatmatches` to render the data in different formats (specified by the first
+argument). Currently, it is capable of producing a pretty-printed version
+(`pretty`) or an HTML table (`html`). By default, the pretty-printed version
+will be written to stdout.
 
 You could, for example, send yourself an email with the results:
 
-    onmatch="mail -s 'I found some movies for you' \
-                  -a 'Content-Type: text/html' \
-                  you@yourdomain.com \
-                  < matches.html"
+	onmatch="
+		/.formatmatches html | mail \
+			-s 'Movies found' \
+			-a 'Content-Type: text/html' \
+			you@yourdomain.com"
 
 `onnomatch` defines what to do in case no matches are found. By default,
 nothing is done.

@@ -41,7 +41,7 @@ main () {
 				# regex capturing groups: title, year, resolution
 				title=$(sed -E 's/^(.*) (\(.+\)) (\[.+\])/\1/' <<< "$title")
 				cat "$watchlist" | while read -r film; do
-					if grep -iwq "$film" <<< "$title"; then
+					if grep -iwqF "$film" <<< "$title"; then
 						log "Match: '$film' -> '$title'"
 						echo -e "$film\t$title\t$url\t$thread" >> matches
 					fi

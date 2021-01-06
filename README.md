@@ -46,3 +46,7 @@ nothing is done.
 `onerror` defines what to do when the program encounters an error. The error
 message is written to the logfile and also made available in a file called
 `error`. If undefined, the program will exit with status code 1.
+
+## Exit codes
+
+0: no issues; 1: generic error; 2: configuration error.
